@@ -1,3 +1,5 @@
+// End-to-end coverage for game catalog listing, filtering, and detail navigation.
+
 import { test, expect, type Response } from '@playwright/test';
 
 test.describe('Game Listing and Navigation', () => {
@@ -21,6 +23,119 @@ test.describe('Game Listing and Navigation', () => {
       const gameCards = page.getByTestId('game-card');
       await expect(gameCards.first().getByTestId('game-title')).toBeVisible();
       await expect(gameCards.first().getByTestId('game-title')).not.toBeEmpty();
+    });
+  });
+
+  test.describe('Game Catalog Filters', () => {
+    test.beforeEach(async ({ page }) => {
+      await page.goto('/');
+      await expect(page.getByTestId('games-grid')).toBeVisible();
+    });
+
+    test('filters by one or more categories and stores selections in the URL', async ({ page }) => {
+      const strategyFilter = page.getByRole('checkbox', { name: 'Strategy' });
+      const puzzleFilter = page.getByRole('checkbox', { name: 'Puzzle' });
+      const visibleCards = page.locator('[data-testid="game-card"]:visible');
+
+      await test.step('Select one category', async () => {
+        await strategyFilter.check();
+
+        await expect(visibleCards).toHaveCount(4);
+        await expect(page.getByTestId('filter-status')).toHaveText('Showing 4 of 21 games.');
+        const categoryNames = await visibleCards.getByTestId('game-category').allTextContents();
+        expect(new Set(categoryNames)).toEqual(new Set(['Strategy']));
+        expect(new URL(page.url()).searchParams.getAll('category')).toEqual([
+          await strategyFilter.getAttribute('value'),
+        ]);
+      });
+
+      await test.step('Add a second category', async () => {
+        await puzzleFilter.check();
+
+        await expect(visibleCards).toHaveCount(8);
+        await expect(page.getByTestId('filter-status')).toHaveText('Showing 8 of 21 games.');
+        const categoryNames = await visibleCards.getByTestId('game-category').allTextContents();
+        expect(new Set(categoryNames)).toEqual(new Set(['Puzzle', 'Strategy']));
+        expect(new URL(page.url()).searchParams.getAll('category')).toEqual([
+          await puzzleFilter.getAttribute('value'),
+          await strategyFilter.getAttribute('value'),
+        ]);
+      });
+    });
+
+    test('filters by publisher and combines it with a category', async ({ page }) => {
+      const publisherFilter = page.getByRole('combobox', { name: 'Publisher' });
+      const strategyFilter = page.getByRole('checkbox', { name: 'Strategy' });
+      const visibleCards = page.locator('[data-testid="game-card"]:visible');
+
+      await test.step('Select a publisher', async () => {
+        await publisherFilter.selectOption({ label: 'GitHub Games' });
+
+        await expect(visibleCards).toHaveCount(5);
+        const publisherNames = await visibleCards.getByTestId('game-publisher').allTextContents();
+        expect(new Set(publisherNames)).toEqual(new Set(['GitHub Games']));
+      });
+
+      await test.step('Combine publisher and category filters', async () => {
+        await strategyFilter.check();
+
+        await expect(visibleCards).toHaveCount(1);
+        await expect(visibleCards.getByTestId('game-title')).toHaveText('Server Siege');
+        await expect(page.getByTestId('filter-status')).toHaveText('Showing 1 of 21 games.');
+
+        const url = new URL(page.url());
+        expect(url.searchParams.get('publisher')).toBe(await publisherFilter.inputValue());
+        expect(url.searchParams.getAll('category')).toEqual([
+          await strategyFilter.getAttribute('value'),
+        ]);
+      });
+    });
+
+    test('clears active filters and restores the full catalog', async ({ page }) => {
+      const publisherFilter = page.getByRole('combobox', { name: 'Publisher' });
+      const strategyFilter = page.getByRole('checkbox', { name: 'Strategy' });
+      const clearButton = page.getByRole('button', { name: 'Clear filters' });
+
+      await strategyFilter.check();
+      await publisherFilter.selectOption({ label: 'GitHub Games' });
+      await expect(clearButton).toBeEnabled();
+
+      await clearButton.click();
+
+      await expect(strategyFilter).not.toBeChecked();
+      await expect(publisherFilter).toHaveValue('');
+      await expect(page.locator('[data-testid="game-card"]:visible')).toHaveCount(21);
+      await expect(page.getByTestId('filter-status')).toHaveText('Showing all 21 games.');
+      await expect(clearButton).toBeDisabled();
+      await expect(page).toHaveURL('/');
+    });
+
+    test('restores valid filters from URL query parameters', async ({ page }) => {
+      const strategyFilter = page.getByRole('checkbox', { name: 'Strategy' });
+      const publisherFilter = page.getByRole('combobox', { name: 'Publisher' });
+      const strategyId = await strategyFilter.getAttribute('value');
+      const githubGamesId = await publisherFilter
+        .getByRole('option', { name: 'GitHub Games' })
+        .getAttribute('value');
+
+      await page.goto(`/?category=${strategyId}&publisher=${githubGamesId}`);
+
+      await expect(page.getByRole('checkbox', { name: 'Strategy' })).toBeChecked();
+      await expect(page.getByRole('combobox', { name: 'Publisher' })).toHaveValue(
+        githubGamesId ?? '',
+      );
+      await expect(page.locator('[data-testid="game-card"]:visible')).toHaveCount(1);
+      await expect(
+        page.locator('[data-testid="game-card"]:visible').getByTestId('game-title'),
+      ).toHaveText('Server Siege');
+    });
+
+    test('removes unknown filter values from the URL', async ({ page }) => {
+      await page.goto('/?category=99999&publisher=99999');
+
+      await expect(page.locator('[data-testid="game-card"]:visible')).toHaveCount(21);
+      await expect(page.getByTestId('filter-status')).toHaveText('Showing all 21 games.');
+      await expect(page).toHaveURL('/');
     });
   });
 
