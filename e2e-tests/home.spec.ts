@@ -32,7 +32,15 @@ test.describe('Home Page', () => {
     await expect(contrastToggle).toHaveAttribute('aria-pressed', 'false');
     await expect(contrastToggle).toHaveAttribute('aria-label', 'Enable high-contrast mode');
     await expect(contrastLabel).toHaveText('High contrast: off');
-    await contrastToggle.click();
+
+    for (let i = 0; i < 10; i++) {
+      await page.keyboard.press('Tab');
+      if (await contrastToggle.evaluate(el => el === document.activeElement)) {
+        break;
+      }
+    }
+    await expect(contrastToggle).toBeFocused();
+    await page.keyboard.press('Space');
 
     await expect(contrastToggle).toHaveAttribute('aria-pressed', 'true');
     await expect(contrastToggle).toHaveAttribute('aria-label', 'Disable high-contrast mode');
