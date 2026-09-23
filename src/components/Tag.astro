@@ -9,8 +9,8 @@ interface Props extends Omit<HTMLAttributes<'span'>, 'color'> {
 const { color = 'blue', class: className, ...rest } = Astro.props;
 
 const colors: Record<NonNullable<Props['color']>, string> = {
-    blue: 'bg-blue-900/60 text-blue-300',
-    purple: 'bg-purple-900/60 text-purple-300',
+    blue: 'bg-blue-900/60 text-blue-300 [.high-contrast_&]:bg-black [.high-contrast_&]:text-white [.high-contrast_&]:border [.high-contrast_&]:border-white',
+    purple: 'bg-purple-900/60 text-purple-300 [.high-contrast_&]:bg-black [.high-contrast_&]:text-white [.high-contrast_&]:border [.high-contrast_&]:border-white',
 };
 ---
 

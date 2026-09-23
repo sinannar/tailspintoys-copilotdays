@@ -10,8 +10,8 @@ const { rating } = Astro.props;
 
 {rating !== null && (
     <div class="flex items-center">
-        <span class="bg-blue-500/20 text-blue-400 text-sm px-3 py-1 rounded-full" data-testid="game-rating">
-            <span class="text-yellow-400">{formatStarRating(rating)}</span>
+        <span class="bg-blue-500/20 text-blue-400 text-sm px-3 py-1 rounded-full [.high-contrast_&]:bg-black [.high-contrast_&]:text-white [.high-contrast_&]:border [.high-contrast_&]:border-white" data-testid="game-rating">
+            <span class="text-yellow-400 [.high-contrast_&]:text-yellow-300">{formatStarRating(rating)}</span>
             {clampRating(rating).toFixed(1)}
         </span>
     </div>

@@ -24,4 +24,19 @@ test.describe('Home Page', () => {
     // Check that the welcome message is present using more specific locator
     await expect(page.getByText('Find your next game! And maybe even back one! Explore our collection!')).toBeVisible();
   });
+
+  test('high-contrast toggle persists across reloads', async ({ page }) => {
+    const contrastToggle = page.getByTestId('high-contrast-toggle');
+
+    await expect(contrastToggle).toHaveAttribute('aria-pressed', 'false');
+    await contrastToggle.click();
+
+    await expect(contrastToggle).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('html')).toHaveClass(/high-contrast/);
+
+    await page.reload();
+
+    await expect(page.locator('html')).toHaveClass(/high-contrast/);
+    await expect(page.getByTestId('high-contrast-toggle')).toHaveAttribute('aria-pressed', 'true');
+  });
 });
