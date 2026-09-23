@@ -1,3 +1,5 @@
+// Accessibility coverage for page semantics, keyboard navigation, and WCAG checks.
+
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
@@ -90,6 +92,31 @@ test.describe('Accessibility Tests', () => {
         }
         return page.locator('[data-testid="game-card"]:focus').count();
       }, { timeout: 15000, message: 'Expected a game card to receive focus via Tab' }).toBeGreaterThan(0);
+    });
+  });
+
+  test('keyboard navigation - should operate catalog filters', async ({ page }) => {
+    await page.goto('/');
+    const strategyFilter = page.getByRole('checkbox', { name: 'Strategy' });
+
+    await test.step('Focus the category filter with the keyboard', async () => {
+      let isFocused = false;
+
+      for (let tabCount = 0; tabCount < 20 && !isFocused; tabCount++) {
+        await page.keyboard.press('Tab');
+        isFocused = await strategyFilter.evaluate(
+          (element) => element === document.activeElement,
+        );
+      }
+
+      expect(isFocused).toBeTruthy();
+      await expect(strategyFilter).toBeFocused();
+    });
+
+    await test.step('Toggle the filter and verify the announced result', async () => {
+      await page.keyboard.press('Space');
+      await expect(strategyFilter).toBeChecked();
+      await expect(page.getByRole('status')).toHaveText('Showing 4 of 21 games.');
     });
   });
 

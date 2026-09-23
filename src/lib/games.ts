@@ -1,7 +1,17 @@
-import { eq, asc } from 'drizzle-orm';
+// Data-access helpers for reading and filtering game records from SQLite via Drizzle ORM.
+
+import { and, asc, eq, inArray } from 'drizzle-orm';
 import type { Database } from './db';
 import { games, categories, publishers } from '../../db/schema';
 import type { Game } from '../types/game';
+
+/**
+ * Filters that can be applied when retrieving games.
+ */
+export interface GameFilters {
+    categoryIds?: readonly number[];
+    publisherId?: number;
+}
 
 const gameSelection = {
     id: games.id,
@@ -50,19 +60,61 @@ function baseGamesQuery(db: Database) {
         .leftJoin(publishers, eq(games.publisherId, publishers.id));
 }
 
-/** All games ordered by title. */
+/**
+ * Retrieves all games ordered by title.
+ *
+ * @param db - Injectable Drizzle database instance.
+ * @returns All games ordered ascending by title.
+ */
 export async function getAllGames(db: Database): Promise<Game[]> {
-    const rows = await baseGamesQuery(db).orderBy(asc(games.title));
+    return getFilteredGames(db);
+}
+
+/**
+ * Retrieves games matching optional category and publisher filters.
+ *
+ * Multiple category IDs are combined with OR semantics, while the publisher
+ * filter is combined with the category selection using AND semantics.
+ *
+ * @param db - Injectable Drizzle database instance.
+ * @param filters - Optional category IDs and publisher ID to match.
+ * @returns Matching games ordered ascending by title.
+ */
+export async function getFilteredGames(
+    db: Database,
+    filters: GameFilters = {},
+): Promise<Game[]> {
+    const categoryCondition = filters.categoryIds?.length
+        ? inArray(games.categoryId, [...filters.categoryIds])
+        : undefined;
+    const publisherCondition = filters.publisherId !== undefined
+        ? eq(games.publisherId, filters.publisherId)
+        : undefined;
+
+    const rows = await baseGamesQuery(db)
+        .where(and(categoryCondition, publisherCondition))
+        .orderBy(asc(games.title));
     return rows.map(mapGame);
 }
 
-/** All game ids ordered by title. */
+/**
+ * Retrieves all game IDs ordered by game title.
+ *
+ * @param db - Injectable Drizzle database instance.
+ * @returns Game IDs ordered by their associated title.
+ */
 export async function getAllGameIds(db: Database): Promise<number[]> {
     const rows = await db.select({ id: games.id }).from(games).orderBy(asc(games.title));
     return rows.map((row) => row.id);
 }
 
-/** A single game by id, or null when it does not exist. */
+/**
+ * Retrieves one game by ID.
+ *
+ * @param db - Injectable Drizzle database instance.
+ * @param id - Game ID to retrieve.
+ * @returns The matching game, or null when it does not exist.
+ */
 export async function getGameById(db: Database, id: number): Promise<Game | null> {
     const row = await baseGamesQuery(db).where(eq(games.id, id)).get();
     return row ? mapGame(row) : null;
