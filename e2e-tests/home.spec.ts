@@ -27,16 +27,28 @@ test.describe('Home Page', () => {
 
   test('high-contrast toggle persists across reloads', async ({ page }) => {
     const contrastToggle = page.getByTestId('high-contrast-toggle');
+    const contrastLabel = contrastToggle.locator('[data-contrast-label]');
 
     await expect(contrastToggle).toHaveAttribute('aria-pressed', 'false');
+    await expect(contrastToggle).toHaveAttribute('aria-label', 'Enable high-contrast mode');
+    await expect(contrastLabel).toHaveText('High contrast: off');
     await contrastToggle.click();
 
     await expect(contrastToggle).toHaveAttribute('aria-pressed', 'true');
+    await expect(contrastToggle).toHaveAttribute('aria-label', 'Disable high-contrast mode');
+    await expect(contrastLabel).toHaveText('High contrast: on');
     await expect(page.locator('html')).toHaveClass(/high-contrast/);
 
     await page.reload();
 
     await expect(page.locator('html')).toHaveClass(/high-contrast/);
     await expect(page.getByTestId('high-contrast-toggle')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByTestId('high-contrast-toggle')).toHaveAttribute(
+      'aria-label',
+      'Disable high-contrast mode',
+    );
+    await expect(page.getByTestId('high-contrast-toggle').locator('[data-contrast-label]')).toHaveText(
+      'High contrast: on',
+    );
   });
 });
