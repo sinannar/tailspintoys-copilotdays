@@ -24,4 +24,34 @@ test.describe('Home Page', () => {
     // Check that the welcome message is present using more specific locator
     await expect(page.getByText('Find your next game! And maybe even back one! Explore our collection!')).toBeVisible();
   });
+
+  test('high-contrast toggle persists across reloads', async ({ page }) => {
+    const contrastToggle = page.getByTestId('high-contrast-toggle');
+    const contrastLabel = contrastToggle.locator('[data-contrast-label]');
+
+    await expect(contrastToggle).toHaveAttribute('aria-pressed', 'false');
+    await expect(contrastToggle).toHaveAttribute('aria-label', 'Enable high-contrast mode');
+    await expect(contrastLabel).toHaveText('High contrast: off');
+
+    await contrastToggle.focus();
+    await expect(contrastToggle).toBeFocused();
+    await page.keyboard.press('Space');
+
+    await expect(contrastToggle).toHaveAttribute('aria-pressed', 'true');
+    await expect(contrastToggle).toHaveAttribute('aria-label', 'Disable high-contrast mode');
+    await expect(contrastLabel).toHaveText('High contrast: on');
+    await expect(page.locator('html')).toHaveClass(/high-contrast/);
+
+    await page.reload();
+
+    await expect(page.locator('html')).toHaveClass(/high-contrast/);
+    await expect(page.getByTestId('high-contrast-toggle')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByTestId('high-contrast-toggle')).toHaveAttribute(
+      'aria-label',
+      'Disable high-contrast mode',
+    );
+    await expect(page.getByTestId('high-contrast-toggle').locator('[data-contrast-label]')).toHaveText(
+      'High contrast: on',
+    );
+  });
 });

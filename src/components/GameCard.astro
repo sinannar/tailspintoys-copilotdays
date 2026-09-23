@@ -14,7 +14,7 @@ const { game } = Astro.props;
 
 <a
     href={`/game/${game.id}`}
-    class="group block bg-slate-800/60 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-slate-700/50 hover:border-blue-500/50 hover:shadow-blue-500/10 hover:shadow-xl transition-all duration-300 hover:translate-y-[-6px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+    class="group block bg-slate-800/60 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-slate-700/50 hover:border-blue-500/50 hover:shadow-blue-500/10 hover:shadow-xl transition-all duration-300 hover:translate-y-[-6px] focus:outline-none focus:ring-2 focus:ring-blue-500 [.high-contrast_&]:bg-black [.high-contrast_&]:border-white [.high-contrast_&]:hover:border-yellow-300 [.high-contrast_&]:focus:ring-yellow-300"
     data-testid="game-card"
     data-game-id={game.id}
     data-game-title={game.title}
@@ -24,7 +24,7 @@ const { game } = Astro.props;
     <div class="p-6 relative">
         <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <div class="relative z-10">
-            <h3 class="text-xl font-semibold text-slate-100 mb-2 group-hover:text-blue-400 transition-colors" data-testid="game-title">{game.title}</h3>
+            <h3 class="text-xl font-semibold text-slate-100 mb-2 group-hover:text-blue-400 transition-colors [.high-contrast_&]:text-white [.high-contrast_&]:group-hover:text-yellow-300" data-testid="game-title">{game.title}</h3>
 
             {(game.category?.name || game.publisher?.name) && (
                 <div class="flex gap-2 mb-3">
@@ -41,9 +41,9 @@ const { game } = Astro.props;
                 </div>
             )}
 
-            <p class="text-slate-400 mb-4 text-sm line-clamp-2" data-testid="game-description">{game.description}</p>
+            <p class="text-slate-400 mb-4 text-sm line-clamp-2 [.high-contrast_&]:text-white" data-testid="game-description">{game.description}</p>
 
-            <div class="mt-4 text-sm text-blue-400 font-medium flex items-center">
+            <div class="mt-4 text-sm text-blue-400 font-medium flex items-center [.high-contrast_&]:text-yellow-300">
                 <span>View details</span>
                 <ArrowRight class="h-4 w-4 ml-1 transform transition-transform duration-300 group-hover:translate-x-2" aria-hidden="true" />
             </div>

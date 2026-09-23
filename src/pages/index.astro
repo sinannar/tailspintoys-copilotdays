@@ -36,11 +36,11 @@ const categories = Array.from(
 
     <section aria-labelledby="featured-games-heading">
       <div class="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <h2 id="featured-games-heading" class="text-2xl font-medium text-slate-100">Featured Games</h2>
+        <h2 id="featured-games-heading" class="text-2xl font-medium text-slate-100 [.high-contrast_&]:text-white">Featured Games</h2>
         {games.length > 0 && (
           <p
             id="filter-status"
-            class="text-sm text-slate-300"
+            class="text-sm text-slate-300 [.high-contrast_&]:text-white"
             role="status"
             aria-live="polite"
             data-testid="filter-status"
@@ -52,23 +52,23 @@ const categories = Array.from(
 
       {games.length > 0 && (
         <form
-          class="mb-8 rounded-xl border border-slate-700 bg-slate-800/60 p-5 shadow-lg"
+          class="mb-8 rounded-xl border border-slate-700 bg-slate-800/60 p-5 shadow-lg [.high-contrast_&]:bg-black [.high-contrast_&]:border-white"
           id="game-filters"
           data-testid="game-filters"
         >
           <div class="grid gap-6 lg:grid-cols-[1fr_18rem_auto] lg:items-end">
             <fieldset>
-              <legend class="mb-3 text-sm font-semibold text-slate-100">Categories</legend>
+              <legend class="mb-3 text-sm font-semibold text-slate-100 [.high-contrast_&]:text-white">Categories</legend>
               <div class="flex flex-wrap gap-3">
                 {categories.map((category) => (
                   <label
-                    class="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-600 bg-slate-900/60 px-3 py-2 text-sm text-slate-200 transition-colors hover:border-blue-500/70 hover:bg-slate-800"
+                    class="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-600 bg-slate-900/60 px-3 py-2 text-sm text-slate-200 transition-colors hover:border-blue-500/70 hover:bg-slate-800 [.high-contrast_&]:bg-black [.high-contrast_&]:text-white [.high-contrast_&]:border-white [.high-contrast_&]:hover:bg-white [.high-contrast_&]:hover:text-black"
                   >
                     <input
                       type="checkbox"
                       name="category"
                       value={category.id}
-                      class="h-4 w-4 rounded border-slate-500 bg-slate-800 text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      class="h-4 w-4 rounded border-slate-500 bg-slate-800 text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 [.high-contrast_&]:border-white [.high-contrast_&]:text-yellow-300 [.high-contrast_&]:focus:ring-yellow-300"
                       aria-controls="games-grid filter-empty-state"
                       data-testid={`category-filter-${category.id}`}
                     />
@@ -79,13 +79,13 @@ const categories = Array.from(
             </fieldset>
 
             <div>
-              <label for="publisher-filter" class="mb-2 block text-sm font-semibold text-slate-100">
+              <label for="publisher-filter" class="mb-2 block text-sm font-semibold text-slate-100 [.high-contrast_&]:text-white">
                 Publisher
               </label>
               <select
                 id="publisher-filter"
                 name="publisher"
-                class="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 [.high-contrast_&]:bg-black [.high-contrast_&]:text-white [.high-contrast_&]:border-white [.high-contrast_&]:focus:ring-yellow-300"
                 aria-controls="games-grid filter-empty-state"
                 data-testid="publisher-filter"
               >
@@ -99,7 +99,7 @@ const categories = Array.from(
             <button
               type="button"
               id="clear-filters"
-              class="rounded-lg border border-slate-600 bg-slate-700 px-4 py-2.5 font-medium text-slate-100 transition-colors hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+              class="rounded-lg border border-slate-600 bg-slate-700 px-4 py-2.5 font-medium text-slate-100 transition-colors hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 [.high-contrast_&]:bg-black [.high-contrast_&]:text-white [.high-contrast_&]:border-white [.high-contrast_&]:hover:bg-white [.high-contrast_&]:hover:text-black [.high-contrast_&]:focus:ring-yellow-300"
               aria-controls="games-grid filter-empty-state"
               data-testid="clear-filters"
               disabled

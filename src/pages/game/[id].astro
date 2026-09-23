@@ -30,7 +30,7 @@ if (!game) {
     <Card class="overflow-hidden" data-testid="game-details">
       <div class="p-6">
         <div class="flex justify-between items-start flex-wrap gap-3">
-          <h1 class="text-3xl font-bold text-slate-100 mb-2" data-testid="game-details-title">{game.title}</h1>
+          <h1 class="text-3xl font-bold text-slate-100 mb-2 [.high-contrast_&]:text-white" data-testid="game-details-title">{game.title}</h1>
 
           <StarRating rating={game.starRating} />
         </div>
@@ -49,8 +49,8 @@ if (!game) {
         </div>
 
         <div class="space-y-4 mt-6">
-          <h2 class="text-lg font-semibold text-slate-200 mb-2">About this game</h2>
-          <div class="text-slate-400 space-y-4">
+          <h2 class="text-lg font-semibold text-slate-200 mb-2 [.high-contrast_&]:text-white">About this game</h2>
+          <div class="text-slate-400 space-y-4 [.high-contrast_&]:text-white">
             <p data-testid="game-details-description">{game.description}</p>
           </div>
         </div>
